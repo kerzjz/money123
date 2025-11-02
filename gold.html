@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄金价格展示</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gold-price-container {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .gold-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #d4af37;
+        }
+        
+        .gold-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .update-time {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .gold-price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .gold-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        
+        .gold-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        
+        .gold-item h3 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+        
+        .change {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        
+        .positive {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+        
+        .negative {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+        
+        .detail {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .loader {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .gold-price-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gold-price-container">
+        <div class="gold-header">
+            <h2><i class="fas fa-coins"></i> 实时黄金价格</h2>
+            <div class="update-time" id="updateTime">正在获取数据...</div>
+        </div>
+        
+        <div id="goldData">
+            <div class="loader">
+                <div class="spinner"></div>
+                <p>正在获取黄金价格数据...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('https://api.pearktrue.cn/api/goldprice/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        // 解析数据
+                        const goldData = data.data;
+                        let html = '<div class="gold-price-grid">';
+                        
+                        goldData.forEach(item => {
+                            // 确定涨跌样式
+                            const changeClass = item.changepercent.startsWith('+') ? 'positive' : 'negative';
+                            
+                            html += `
+                                <div class="gold-item">
+                                    <h3><i class="fas fa-gem"></i> ${item.title}</h3>
+                                    <div class="price">${item.price}</div>
+                                    <div class="change ${changeClass}">${item.changepercent}</div>
+                                    <div class="detail">
+                                        <span>最高: ${item.maxprice}</span>
+                                        <span>最低: ${item.minprice}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                        
+                        document.getElementById('goldData').innerHTML = html;
+                        document.getElementById('updateTime').textContent = `更新时间: ${data.time}`;
+                    } else {
+                        document.getElementById('goldData').innerHTML = 
+                            '<div style="text-align:center; padding:30px; color:#e74c3c;">' +
+                            '<i class="fas fa-exclamation-triangle"></i> 获取数据失败: ' + data.msg +
+                            '</div>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('goldData').innerHTML = 
+                        '<div style="text-align:center; padding:30px; color:#e74c3c;">' +
+                        '<i class="fas fa-exclamation-triangle"></i> 请求失败: ' + error.message +
+                        '</div>';
+                });
+        });
+    </script>
+</body>
+</html>

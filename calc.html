@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>理财看板 · 实时金价</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--<style>
+  :root{--open:#2ecc71; --pause:#f39c12; --close:#e74c3c; --gold:#d4af37;}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+  body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;display:flex;justify-content:center;padding:20px;color:#fff;}
+  .wrap{width:100%;max-width:1200px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center;}
+  .card{background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border-radius:15px;border:1px solid rgba(255,255,255,0.18);padding:25px 30px;width:360px;display:flex;flex-direction:column;gap:12px;}
+  h2{font-size:1.3rem;display:flex;align-items:center;gap:8px;}
+  .icon{width:26px;height:26px;background:linear-gradient(45deg,var(--open),var(--gold));border-radius:6px;display:grid;place-content:center;color:#0f2027;font-weight:bold;}
+  .status{font-size:1.8rem;font-weight:700;margin:8px 0;}
+  .open{color:var(--open)}.pause{color:var(--pause)}.close{color:var(--close)}
+  .note{font-size:.8rem;opacity:.7;}
+  .gold-row{display:flex;justify-content:space-between;font-size:1rem;margin:4px 0;}
+  .gold-price{font-weight:700;color:var(--gold);}
+  .shop-row{display:flex;justify-content:space-between;font-size:.95rem;margin:3px 0;}
+  .shop-name{opacity:.85;}
+  /* 计算器 */
+  .calc{border-top:1px solid rgba(255,255,255,0.15);padding-top:15px;display:flex;flex-direction:column;gap:10px;}
+  .calc h3{font-size:1rem;font-weight:500;}
+  .input-group{position:relative;}
+  input{width:100%;padding:10px 40px 10px 12px;background:rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;font-size:15px;transition:all .3s;}
+  input:focus{outline:none;border-color:var(--open);box-shadow:0 0 0 3px rgba(46,204,113,.25);}
+  .unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:.6;font-size:13px;pointer-events:none;}
+  button{margin-top:6px;padding:10px;background:linear-gradient(45deg,var(--open),var(--gold));color:#0f2027;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .3s;}
+  button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(46,204,113,.35);}
+  .result{min-height:24px;font-size:15px;font-weight:500;color:var(--gold);}
+  @media(max-width:600px){.card{width:100%}}-->
+</head>
+<body>
+<div class="wrap">
+  
+  <!-- ===== 理财计算器 ===== -->
+  <div class="card">
+    <h2><span class="icon">算</span>理财计算器</h2>
+    <div class="calc">
+      <h3>① 计算利息</h3>
+      <div class="input-group"><input id="p1" type="number" placeholder="本金（元）"><span class="unit">元</span></div>
+      <div class="input-group"><input id="r7" type="number" placeholder="七日年化（%）" step="0.01"><span class="unit">%</span></div>
+      <div class="input-group"><input id="days" type="number" placeholder="持有天数（空=1）"><span class="unit">天</span></div>
+      <button onclick="calcInterest()">计算利息</button>
+      <div id="intRes" class="result"></div>
+
+      <h3 style="margin-top:15px;">② 反算七日年化</h3>
+      <div class="input-group"><input id="p2" type="number" placeholder="本金（元）"><span class="unit">元</span></div>
+      <div class="input-group"><input id="earn7" type="number" placeholder="七日总收益（元）" step="0.01"><span class="unit">元</span></div>
+      <button onclick="calcAPR()">计算七日年化</button>
+      <div id="aprRes" class="result"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ************************************************************
+ * 4. 理财计算器
+ * ************************************************************/
+function calcInterest(){
+  const p=Number(document.getElementById('p1').value),r=Number(document.getElementById('r7').value),d=Number(document.getElementById('days').value)||1;
+  if(!p||!r)return document.getElementById('intRes').textContent='请填写完整';
+  const interest=(p*r/100/365*d).toFixed(2);
+  document.getElementById('intRes').textContent=`${d}天收益：${interest} 元`;
+}
+function calcAPR(){
+  const p=Number(document.getElementById('p2').value),e=Number(document.getElementById('earn7').value);
+  if(!p||!e)return document.getElementById('aprRes').textContent='请填写完整';
+  const apr=(e/p*365/7*100).toFixed(2);
+  document.getElementById('aprRes').textContent=`七日年化：${apr} %`;
+}
+</script>
+</body>
+</html>

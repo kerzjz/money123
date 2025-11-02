@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>股票</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .result-container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>股票</h1>
+
+  <!-- 输入框 -->
+  <label for="secidInput">请输入股票代码</label>
+  <input type="text" id="secidInput" placeholder="例如: 300033">
+  <br><br>
+
+  <!-- POST请求按钮 -->
+  <button id="postRequestButton">发送POST请求</button>
+  <br><br>
+
+  <!-- GET请求按钮 -->
+  <button id="getRequestButton">发送GET请求</button>
+  <br><br>
+
+  <!-- 显示返回数据的区域 -->
+  <div id="result" class="result-container"></div>
+
+  <script>
+    // 获取按钮和显示结果的元素
+    const postButton = document.getElementById('postRequestButton');
+    const getButton = document.getElementById('getRequestButton');
+    const resultDiv = document.getElementById('result');
+    const secidInput = document.getElementById('secidInput');
+
+    // 清空结果区域
+    function clearResult() {
+      resultDiv.innerHTML = '';
+    }
+
+    // 映射键到描述性内容
+    const keyMappings = {
+      secid: '股票代码',
+      num: '数量',
+      name: '股票名称',
+      opening: '开盘',
+      closing: '收盘',
+      lowest: '最低',
+      trading_volume: '成交量',
+      turnover: '成交额',
+      amplitude: '振幅',
+      inorde: '涨跌幅',
+      inorde_amount: '涨跌额',
+      turnover_rate: '换手率',
+      code: '__HIDDEN__', // 隐藏code字段
+      msg: '__HIDDEN__', // 隐藏msg字段
+      time: '时间', 
+      highest: '最高', 
+      data: '数据', 
+      api_source: '__HIDDEN__', 
+      // 可以继续添加其他键的映射
+    };
+
+    // 检查是否应该隐藏键
+    function shouldHideKey(key) {
+      return keyMappings[key] === '__HIDDEN__';
+    }
+
+    // 格式化显示数据
+    function displayData(data) {
+      clearResult();
+      if (Array.isArray(data)) {
+        // 如果是数组，显示为表格
+        const table = document.createElement('table');
+        const headerRow = document.createElement('tr');
+        const keys = Object.keys(data[0]).filter(key => !shouldHideKey(key));
+        keys.forEach(key => {
+          const th = document.createElement('th');
+          th.textContent = keyMappings[key] || key; // 使用映射或原始键
+          headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          keys.forEach(key => {
+            const cell = document.createElement('td');
+            if (typeof item[key] === 'object') {
+              // 如果值是对象，递归显示
+              cell.appendChild(displayData(item[key]));
+            } else {
+              cell.textContent = item[key];
+            }
+            row.appendChild(cell);
+          });
+          table.appendChild(row);
+        });
+        return table;
+      } else if (typeof data === 'object') {
+        // 如果是对象，显示为表格
+        const table = document.createElement('table');
+        const headerRow = document.createElement('tr');
+        const th = document.createElement('th');
+        th.textContent = '字段'; // 修改Key列的显示内容
+        headerRow.appendChild(th);
+        const th2 = document.createElement('th');
+        th2.textContent = '值'; // 修改Value列的显示内容
+        headerRow.appendChild(th2);
+        table.appendChild(headerRow);
+        Object.keys(data).filter(key => !shouldHideKey(key)).forEach(key => {
+          const row = document.createElement('tr');
+          const cell1 = document.createElement('td');
+          cell1.textContent = keyMappings[key] || key; // 使用映射或原始键
+          row.appendChild(cell1);
+          const cell2 = document.createElement('td');
+          if (typeof data[key] === 'object') {
+            // 如果值是对象，递归显示
+            cell2.appendChild(displayData(data[key]));
+          } else {
+            cell2.textContent = JSON.stringify(data[key], null, 2);
+          }
+          row.appendChild(cell2);
+          table.appendChild(row);
+        });
+        return table;
+      } else {
+        // 其他类型直接显示
+        const text = document.createElement('p');
+        text.textContent = data;
+        return text;
+      }
+    }
+
+    // 使用Fetch API发送POST请求
+    postButton.addEventListener('click', () => {
+      const secid = secidInput.value.trim();
+      if (!secid) {
+        alert('请输入股票代码！');
+        return;
+      }
+      fetch('https://api.pearktrue.cn/api/stock/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          secid: secid,
+          num: '100'
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        resultDiv.appendChild(displayData(data));
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        clearResult();
+        const errorText = document.createElement('p');
+        errorText.style.color = 'red';
+        errorText.textContent = `请求失败: ${error}`;
+        resultDiv.appendChild(errorText);
+      });
+    });
+
+    // 使用Fetch API发送GET请求
+    getButton.addEventListener('click', () => {
+      const secid = secidInput.value.trim();
+      if (!secid) {
+        alert('请输入股票代码！');
+        return;
+      }
+      fetch(`https://api.pearktrue.cn/api/stock/?secid=${secid}&num=100`, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
+        resultDiv.appendChild(displayData(data));
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        clearResult();
+        const errorText = document.createElement('p');
+        errorText.style.color = 'red';
+        errorText.textContent = `请求失败: ${error}`;
+        resultDiv.appendChild(errorText);
+      });
+    });
+  </script>
+</body>
+</html>
