@@ -10,12 +10,13 @@
 | 💰 **实时金价** | 调用公开接口，展示国内主要黄金品种价格、涨跌幅、最高/最低 |
 | 📈 **股票查询** | 支持 POST / GET 两种请求方式，输入代码即可返回当日行情 |
 | 🧮 **理财计算器** | ① 根据七日年化计算收益 ② 反推七日年化 |
+| 
 | 🎨 **MDUI 组件** | 使用 Material Design 风格标签页、按钮、输入框等 |
 
 ---
 
 ## 🔗 在线预览
-[https://kerzjz.qzz.io/Money123](https://kerzjz.qzz.io/Money123)  
+[https://kerzjz.qzz.io/money123](https://kerzjz.qzz.io/money123)  
 
 
 ---
@@ -23,7 +24,7 @@
 ## 🚀 本地运行
 1. 克隆仓库  
    ```bash
-   git clone https://github.com/kerzjz/Money123.git
+   git clone https://github.com/kerzjz/money123.git
    cd Money123
    ```
 2. 直接打开  
