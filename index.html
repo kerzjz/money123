@@ -198,26 +198,38 @@ function fmt(v) {
 /* 渲染表格 */
 function renderTable(res) {
   const raw = Array.isArray(res.data) ? res.data : [res.data];
-  const map = {
-    secid: '股票代码', name: '股票名称', time: '时间', opening: '开盘', closing: '收盘', highest: '最高', lowest: '最低',
-    inorde: '涨跌幅', trading_volume: '成交量', turnover: '成交额',
-    turnover_rate: '换手率', amplitude: '振幅', 
-  };
-  tbody.innerHTML = raw.map(obj => `
-    <tr>
-      <td>${fmt(obj.secid)}</td>
-      <td>${fmt(obj.name)}</td>
-      <td>${fmt(obj.time)}</td>
-      <td>${fmt(obj.opening)}</td>
-      <td>${fmt(obj.closing)}</td>
-      <td>${fmt(obj.highest)}</td>
-      <td>${fmt(obj.lowest)}</td>
-      <td>${fmt(obj.inorde)}</td>
-      <td>${fmt(obj.trading_volume)}</td>
-      <td>${fmt(obj.turnover)}</td>
-      <td>${fmt(obj.turnover_rate)}</td>
-      <td>${fmt(obj.amplitude)}</td>
-    </tr>`).join('');
+  /* 修正字段映射 */
+const map = {
+  code: '股票代码',
+  stock_name: '股票名称',
+  time: '时间',
+  opening: '开盘',
+  closing: '收盘',
+  highest: '最高',
+  lowest: '最低',
+  inorde: '涨跌幅',
+  trading_volume: '成交量',
+  turnover: '成交额',
+  turnover_rate: '换手率',
+  amplitude: '振幅'
+};
+
+/* 渲染时也用新字段名 */
+tbody.innerHTML = raw.map(obj => `
+  <tr>
+    <td>${fmt(obj.code)}</td>
+    <td>${fmt(obj.stock_name)}</td>
+    <td>${fmt(obj.time)}</td>
+    <td>${fmt(obj.opening)}</td>
+    <td>${fmt(obj.closing)}</td>
+    <td>${fmt(obj.highest)}</td>
+    <td>${fmt(obj.lowest)}</td>
+    <td>${fmt(obj.inorde)}</td>
+    <td>${fmt(obj.trading_volume)}</td>
+    <td>${fmt(obj.turnover)}</td>
+    <td>${fmt(obj.turnover_rate)}</td>
+    <td>${fmt(obj.amplitude)}</td>
+  </tr>`).join('');
 }
 
 /* 绑定按钮 */
@@ -262,4 +274,5 @@ getBtn.onclick = () => {
   </script>
 </body>
 </html>
+
 
