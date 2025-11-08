@@ -239,7 +239,7 @@ postBtn.onclick = () => {
   fetch('https://api.pearktrue.cn/api/stock/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ secid: v, num: '100' })
+    body: JSON.stringify({ secid: v, num: '30' })
   })
     .then(r => r.json())
     .then(renderTable)
@@ -274,6 +274,7 @@ getBtn.onclick = () => {
   </script>
 </body>
 </html>
+
 
 
 
