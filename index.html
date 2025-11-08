@@ -77,6 +77,7 @@
         <tr>
           <th>股票代码</th>
           <th>股票名称</th>
+          <th>时间</th>
           <th>开盘</th>
           <th>收盘</th>
           <th>最高</th>
@@ -86,7 +87,6 @@
           <th>成交额</th>
           <th>换手率</th>
           <th>振幅</th>
-          <th>时间</th>
         </tr>
       </thead>
       <tbody id="stockTbody"></tbody>
@@ -199,14 +199,15 @@ function fmt(v) {
 function renderTable(res) {
   const raw = Array.isArray(res.data) ? res.data : [res.data];
   const map = {
-    opening: '开盘', closing: '收盘', highest: '最高', lowest: '最低',
+    secid: '股票代码', name: '股票名称', time: '时间', opening: '开盘', closing: '收盘', highest: '最高', lowest: '最低',
     inorde: '涨跌幅', trading_volume: '成交量', turnover: '成交额',
-    turnover_rate: '换手率', amplitude: '振幅', time: '时间'
+    turnover_rate: '换手率', amplitude: '振幅', 
   };
   tbody.innerHTML = raw.map(obj => `
     <tr>
       <td>${fmt(obj.secid)}</td>
       <td>${fmt(obj.name)}</td>
+      <td>${fmt(obj.time)}</td>
       <td>${fmt(obj.opening)}</td>
       <td>${fmt(obj.closing)}</td>
       <td>${fmt(obj.highest)}</td>
@@ -216,7 +217,6 @@ function renderTable(res) {
       <td>${fmt(obj.turnover)}</td>
       <td>${fmt(obj.turnover_rate)}</td>
       <td>${fmt(obj.amplitude)}</td>
-      <td>${fmt(obj.time)}</td>
     </tr>`).join('');
 }
 
@@ -262,3 +262,4 @@ getBtn.onclick = () => {
   </script>
 </body>
 </html>
+
