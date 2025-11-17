@@ -79,18 +79,18 @@
       margin-top: 20px;
     }
   </style>-->
-
+  <!-- 2.股票 -->
   <!-- 输入框 -->
   <label for="secidInput">请输入股票代码</label>
-  <input type="text" id="secidInput" placeholder="例如: 300033">
+  <input class="mdui-textfield-input" type="text" id="secidInput" placeholder="例如: 300033">
   <br><br>
 
   <!-- POST请求按钮 -->
-  <button id="postRequestButton">发送POST请求</button>
+  <button class="mdui-btn mdui-btn-raised mdui-color-indigo" id="postRequestButton">发送POST请求</button>
   <br><br>
 
   <!-- GET请求按钮 -->
-  <button id="getRequestButton">发送GET请求</button>
+  <button class="mdui-btn mdui-btn-raised mdui-color-indigo" id="getRequestButton">发送GET请求</button>
   <br><br>
 
   <!-- 显示返回数据的区域 -->
@@ -321,7 +321,7 @@ getBtn.onclick = () => {
       msg: '__HIDDEN__', // 隐藏msg字段
       time: '时间', 
       highest: '最高', 
-      data: '数据', 
+      data: ' ', 
       api_source: '__HIDDEN__', 
       // 可以继续添加其他键的映射
     };
@@ -470,6 +470,7 @@ getBtn.onclick = () => {
   </script>
 </body>
 </html>
+
 
 
 
