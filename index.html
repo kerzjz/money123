@@ -60,7 +60,43 @@
       </div>
     </div>
 
-    <!-- 2. 股票（表格版） -->
+    <!-- 2.股票（旧）-->
+  <!--<style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .result-container {
+      margin-top: 20px;
+    }
+  </style>-->
+
+  <!-- 输入框 -->
+  <label for="secidInput">请输入股票代码</label>
+  <input type="text" id="secidInput" placeholder="例如: 300033">
+  <br><br>
+
+  <!-- POST请求按钮 -->
+  <button id="postRequestButton">发送POST请求</button>
+  <br><br>
+
+  <!-- GET请求按钮 -->
+  <button id="getRequestButton">发送GET请求</button>
+  <br><br>
+
+  <!-- 显示返回数据的区域 -->
+  <div id="result" class="result-container"></div>
+
+    <!-- 2. 股票（表格版）
 <div id="stock" class="mdui-p-a-2">
   <div class="mdui-textfield mdui-textfield-floating-label">
     <label class="mdui-textfield-label">股票代码</label>
@@ -70,7 +106,7 @@
   <button id="postBtn" class="mdui-btn mdui-btn-raised mdui-color-indigo mdui-m-r-2">POST 查询</button>
   <button id="getBtn"  class="mdui-btn mdui-btn-raised mdui-color-green">GET 查询</button>
 
-  <!-- 行情表格 -->
+  行情表格
   <div class="mdui-m-t-2">
     <table class="mdui-table mdui-table-hoverable">
       <thead>
@@ -92,7 +128,7 @@
       <tbody id="stockTbody"></tbody>
     </table>
   </div>
-</div>
+</div>-->
 
     <!--3. 图片占位
     <div id="images" class="mdui-p-a-2 mdui-text-center">
@@ -165,12 +201,12 @@
                   <div class="mdui-card-primary-title">${item.title}</div>
                 </div>
                 <div class="mdui-card-content">
-                  <div class="mdui-typo-display-1 mdui-text-color-theme">${item.price}</div>
+                  <!--<div class="mdui-typo-display-1 mdui-text-color-theme">${item.price}</div>-->
                   <div class="mdui-chip ${item.changepercent.startsWith('+')?'mdui-color-red':'mdui-color-green'} mdui-m-t-1">
                     <span class="mdui-chip-title">${item.changepercent}</span>
                   </div>
                   <div class="mdui-text-color-theme-secondary mdui-m-t-1">
-                    最高：${item.maxprice} &nbsp; 最低：${item.minprice}
+                    最高：${item.maxprice} &nbsp; 最低：${item.minprice} &nbsp; 最高买入价：${item.buyprice} &nbsp; 最低卖出价：${item.recycleprice}; 
                   </div>
                 </div>
               </div>
@@ -179,13 +215,13 @@
         }
       });
 
-    /* ========== 股票（表格渲染） ========== */
+    /* * ========== 股票（表格渲染） ========== 
 const postBtn = document.getElementById('postBtn');
 const getBtn  = document.getElementById('getBtn');
 const tbody   = document.getElementById('stockTbody');
 const secInp  = document.getElementById('secidInput');
 
-/* 把任意值转成字符串 */
+/ 把任意值转成字符串 
 function fmt(v) {
   if (v === null || v === undefined) return '';
   if (typeof v === 'object') {
@@ -195,10 +231,10 @@ function fmt(v) {
   return String(v);
 }
 
-/* 渲染表格 */
+/* 渲染表格 
 function renderTable(res) {
   const raw = Array.isArray(res.data) ? res.data : [res.data];
-  /* 修正字段映射 */
+  /* 修正字段映射 
 const map = {
   secid: '股票代码',
   name: '股票名称',
@@ -214,7 +250,7 @@ const map = {
   amplitude: '振幅'
 };
 
-/* 渲染时也用新字段名 */
+/* 渲染时也用新字段名
 tbody.innerHTML = raw.map(obj => `
   <tr>
     <td>${fmt(obj.secid)}</td>
@@ -232,7 +268,7 @@ tbody.innerHTML = raw.map(obj => `
   </tr>`).join('');
 }
 
-/* 绑定按钮 */
+/* 绑定按钮 
 postBtn.onclick = () => {
   const v = secInp.value.trim();
   if (!v) return mdui.snackbar({ message: '请输入股票代码' });
@@ -253,7 +289,167 @@ getBtn.onclick = () => {
     .then(r => r.json())
     .then(renderTable)
     .catch(e => tbody.innerHTML = `<tr><td colspan="12" class="mdui-text-color-red">请求失败：${e}</td></tr>`);
-};
+}; */
+
+  /*  ========== 股票（表格渲染） ========== */
+    // 获取按钮和显示结果的元素
+    const postButton = document.getElementById('postRequestButton');
+    const getButton = document.getElementById('getRequestButton');
+    const resultDiv = document.getElementById('result');
+    const secidInput = document.getElementById('secidInput');
+
+    // 清空结果区域
+    function clearResult() {
+      resultDiv.innerHTML = '';
+    }
+
+    // 映射键到描述性内容
+    const keyMappings = {
+      secid: '股票代码',
+      num: '数量',
+      name: '股票名称',
+      opening: '开盘',
+      closing: '收盘',
+      lowest: '最低',
+      trading_volume: '成交量',
+      turnover: '成交额',
+      amplitude: '振幅',
+      inorde: '涨跌幅',
+      inorde_amount: '涨跌额',
+      turnover_rate: '换手率',
+      code: '__HIDDEN__', // 隐藏code字段
+      msg: '__HIDDEN__', // 隐藏msg字段
+      time: '时间', 
+      highest: '最高', 
+      data: '数据', 
+      api_source: '__HIDDEN__', 
+      // 可以继续添加其他键的映射
+    };
+
+    // 检查是否应该隐藏键
+    function shouldHideKey(key) {
+      return keyMappings[key] === '__HIDDEN__';
+    }
+
+    // 格式化显示数据
+    function displayData(data) {
+      clearResult();
+      if (Array.isArray(data)) {
+        // 如果是数组，显示为表格
+        const table = document.createElement('table');
+        const headerRow = document.createElement('tr');
+        const keys = Object.keys(data[0]).filter(key => !shouldHideKey(key));
+        keys.forEach(key => {
+          const th = document.createElement('th');
+          th.textContent = keyMappings[key] || key; // 使用映射或原始键
+          headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          keys.forEach(key => {
+            const cell = document.createElement('td');
+            if (typeof item[key] === 'object') {
+              // 如果值是对象，递归显示
+              cell.appendChild(displayData(item[key]));
+            } else {
+              cell.textContent = item[key];
+            }
+            row.appendChild(cell);
+          });
+          table.appendChild(row);
+        });
+        return table;
+      } else if (typeof data === 'object') {
+        // 如果是对象，显示为表格
+        const table = document.createElement('table');
+        const headerRow = document.createElement('tr');
+        const th = document.createElement('th');
+        th.textContent = '字段'; // 修改Key列的显示内容
+        headerRow.appendChild(th);
+        const th2 = document.createElement('th');
+        th2.textContent = '值'; // 修改Value列的显示内容
+        headerRow.appendChild(th2);
+        table.appendChild(headerRow);
+        Object.keys(data).filter(key => !shouldHideKey(key)).forEach(key => {
+          const row = document.createElement('tr');
+          const cell1 = document.createElement('td');
+          cell1.textContent = keyMappings[key] || key; // 使用映射或原始键
+          row.appendChild(cell1);
+          const cell2 = document.createElement('td');
+          if (typeof data[key] === 'object') {
+            // 如果值是对象，递归显示
+            cell2.appendChild(displayData(data[key]));
+          } else {
+            cell2.textContent = JSON.stringify(data[key], null, 2);
+          }
+          row.appendChild(cell2);
+          table.appendChild(row);
+        });
+        return table;
+      } else {
+        // 其他类型直接显示
+        const text = document.createElement('p');
+        text.textContent = data;
+        return text;
+      }
+    }
+
+    // 使用Fetch API发送POST请求
+    postButton.addEventListener('click', () => {
+      const secid = secidInput.value.trim();
+      if (!secid) {
+        alert('请输入股票代码！');
+        return;
+      }
+      fetch('https://api.pearktrue.cn/api/stock/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          secid: secid,
+          num: '100'
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        resultDiv.appendChild(displayData(data));
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        clearResult();
+        const errorText = document.createElement('p');
+        errorText.style.color = 'red';
+        errorText.textContent = `请求失败: ${error}`;
+        resultDiv.appendChild(errorText);
+      });
+    });
+
+    // 使用Fetch API发送GET请求
+    getButton.addEventListener('click', () => {
+      const secid = secidInput.value.trim();
+      if (!secid) {
+        alert('请输入股票代码！');
+        return;
+      }
+      fetch(`https://api.pearktrue.cn/api/stock/?secid=${secid}&num=100`, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
+        resultDiv.appendChild(displayData(data));
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        clearResult();
+        const errorText = document.createElement('p');
+        errorText.style.color = 'red';
+        errorText.textContent = `请求失败: ${error}`;
+        resultDiv.appendChild(errorText);
+      });
+    });
+
     
     /* ========== 理财计算 ========== */
     function calcInterest() {
@@ -274,6 +470,7 @@ getBtn.onclick = () => {
   </script>
 </body>
 </html>
+
 
 
 
